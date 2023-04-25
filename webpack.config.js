@@ -36,6 +36,17 @@ module.exports = {
                 use:[ // Webpack process loaders from right to left. Order matters
                     'style-loader','css-loader','sass-loader'
                 ]
+            },
+            {
+                test:/\.js$/,
+                exclude:/node_modules/, //Except those located in this folder
+                use:{
+                    loader:'babel-loader',
+                    options:{
+                        presets:['@babel/env'],
+                        plugins:['@babel/plugin-proposal-class-properties']
+                    }
+                }
             }
         ]
     }
