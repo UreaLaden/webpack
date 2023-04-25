@@ -23,6 +23,13 @@ module.exports = {
             {
                 test:/\.txt/,
                 type:'asset/source' // Webpack reads text file in as js string
+            },
+            {
+                test:/\.css$/,
+                use:[
+                    'style-loader',
+                    'css-loader'
+                ]
             }
         ]
     }
