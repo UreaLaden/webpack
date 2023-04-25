@@ -1,13 +1,11 @@
 const path = require("path"); //Cannot use ECMA script modules in this file
-const TerserPlugin = require("terser-webpack-plugin"); //Installed with webpack5
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.js",
   output: {
-    filename: "bundle.[contenthash].js", //Updates on changes only
+    filename: "bundle.js", //Updates on changes only
     path: path.resolve(__dirname, "./dist"),
     //publicPath:'auto' //This happens behind the scenes with Webpack5
     publicPath: "",
@@ -16,7 +14,17 @@ module.exports = {
     //     keep: /\.css/ //tells webpack which files to keep
     // }
   },
-  mode: "none",
+  mode: "development", // none | development | production
+  devServer:{
+    port:9000,
+    static:{
+        directory:path.resolve(__dirname, "./dist"),
+    },
+    devMiddleware:{
+        index:'index.html',
+        writeToDisk: true //Write files to the dist folder
+    }
+  },
   module: {
     rules: [
       {
@@ -35,13 +43,13 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.scss$/,
         use: [
           // Webpack process loaders from right to left. Order matters
-          MiniCssExtractPlugin.loader,
+          "style-loader",
           "css-loader",
           "sass-loader",
         ],
@@ -59,20 +67,13 @@ module.exports = {
       },
       {
         test: /\.hbs$/,
-        use:[
-            'handlebars-loader'
-        ]
-      }
+        use: ["handlebars-loader"],
+      },
     ],
   },
   plugins: [
-    new TerserPlugin(), // Makes Bundle smaller
-    new MiniCssExtractPlugin({
-      //Extract all css into a separate css file
-      filename: "styles.[contenthash].css",
-    }),
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({ 
+    new HtmlWebpackPlugin({
       title: "Hello world",
       template: "src/index.hbs",
       description: "Some description",
