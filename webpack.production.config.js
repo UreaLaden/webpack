@@ -4,9 +4,12 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: {
+    'hello-world':"./src/hello-world.js",
+    'matrix':"./src/matrix.js"
+  },
   output: {
-    filename: "bundle.[contenthash].js", //Updates on changes only
+    filename: "[name].[contenthash].js", //Updates on changes only
     path: path.resolve(__dirname, "./dist"),
     //publicPath:'auto' //This happens behind the scenes with Webpack5
     publicPath: "",
@@ -16,6 +19,12 @@ module.exports = {
     // }
   },
   mode: "production",// none | development | production
+  optimization:{
+    splitChunks:{
+      chunks: 'all',
+      minSize: 3000, //3kb
+    }
+  },
   module: {
     rules: [
       {
@@ -67,13 +76,24 @@ module.exports = {
   plugins: [
     new MiniCssExtractPlugin({
       //Extract all css into a separate css file
-      filename: "styles.[contenthash].css",
+      filename: "[name].[contenthash].css",
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({ 
+      filename:'hello-world.html',
+      chunks: ['hello-world'],
       title: "Hello world",
-      template: "src/index.hbs",
-      description: "Some description",
+      template: "src/page-template.hbs",
+      description: "Hello World",
+      minify:false //disable minification on html files
+    }),
+    new HtmlWebpackPlugin({ 
+      filename:"matrix.html",
+      chunks:['matrix'],
+      title: "Matrix",
+      template: "src/page-template.hbs",
+      description: "Matrix",
+      minify:false 
     }),
   ],
 };
